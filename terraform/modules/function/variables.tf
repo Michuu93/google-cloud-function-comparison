@@ -2,7 +2,7 @@ variable "gcp-project" {}
 variable "gcp-region" {}
 variable "function_name" {}
 variable "runtime" {}
-variable "source_dir" {}
+variable "source_root_dir" {}
 variable "memory" {
   default = 128
 }

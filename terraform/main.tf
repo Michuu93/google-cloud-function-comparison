@@ -17,11 +17,11 @@ resource "google_project_service" "cb" {
 }
 
 module "nodejs14" {
-  for_each      = var.function_runtimes
-  source        = "./modules/function"
-  gcp-project   = var.gcp-project
-  gcp-region    = var.gcp-region
-  function_name = each.key
-  runtime       = "nodejs14"
-  source_dir    = abspath("../functions/nodejs14")
+  for_each        = var.function_runtimes
+  source          = "./modules/function"
+  gcp-project     = var.gcp-project
+  gcp-region      = var.gcp-region
+  function_name   = each.key
+  runtime         = "nodejs14"
+  source_root_dir = abspath("../functions")
 }
