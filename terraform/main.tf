@@ -16,12 +16,12 @@ resource "google_project_service" "cb" {
   service = "cloudbuild.googleapis.com"
 }
 
-module "nodejs14" {
+module "function" {
   for_each        = var.function_runtimes
   source          = "./modules/function"
   gcp-project     = var.gcp-project
   gcp-region      = var.gcp-region
   function_name   = each.key
-  runtime         = "nodejs14"
+  runtime         = each.key
   source_root_dir = abspath("../functions")
 }
