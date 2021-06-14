@@ -33,7 +33,7 @@ terraform apply -auto-approve
 ```
 
 ### Test function
-`europe-west1` is a region from variable `gcp-region`
+`europe-west1` is a region from variable `gcp-region`, `nodejs14` is function name (runtime)
 ```
 curl "https://europe-west1-$(gcloud config get-value project).cloudfunctions.net/nodejs14" -H "Authorization: bearer $(gcloud auth print-identity-token)"
 ```
@@ -52,4 +52,4 @@ run the destroy command again.
 ## How to add a new function
 1. The source code for the function is in the directory `functions/`.
 2. Each function has a directory with a name that is the name of the function and the runtime environment. Example: `/functions/nodejs14` directory contains function codes named `nodejs14` and in the same runtime.
-4. Add function name/runtime to `variables.tf`. The `function_runtimes` variable contains a set of functions names/runtimes in the default section. You can overwrite the variable in the `terraform.tfvars` file.
+4. Add function name/runtime and entry point to `variables.tf`. The `functions` variable contains a list of objects containing functions names/runtimes and entry points in the default section. You can overwrite the variable in the `terraform.tfvars` file.

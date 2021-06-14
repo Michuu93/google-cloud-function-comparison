@@ -16,12 +16,21 @@ resource "google_project_service" "cb" {
   service = "cloudbuild.googleapis.com"
 }
 
+resource "google_storage_bucket" "bucket" {
+  project       = var.gcp-project
+  name          = "${var.gcp-project}-functions"
+  location      = var.gcp-region
+  force_destroy = true
+}
+
 module "function" {
-  for_each        = var.function_runtimes
+  for_each        = { for function in var.functions : function.runtime => function }
   source          = "./modules/function"
   gcp-project     = var.gcp-project
   gcp-region      = var.gcp-region
-  function_name   = each.key
-  runtime         = each.key
+  function_name   = each.value.runtime
+  runtime         = each.value.runtime
+  entry_point     = each.value.entry_point
   source_root_dir = abspath("../functions")
+  bucket_name     = google_storage_bucket.bucket.name
 }
