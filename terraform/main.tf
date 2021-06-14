@@ -33,4 +33,5 @@ module "function" {
   entry_point     = each.value.entry_point
   source_root_dir = abspath("../functions")
   bucket_name     = google_storage_bucket.bucket.name
+  depends_on      = [google_project_service.cf, google_project_service.cb, google_storage_bucket.bucket]
 }

@@ -43,12 +43,6 @@ curl "https://europe-west1-$(gcloud config get-value project).cloudfunctions.net
 terraform destroy -auto-approve
 ```
 
-If you get an error:
-```
-Error 403: Cloud Functions API has not been used in project 337399139667 before or it is disabled.
-```
-run the destroy command again.
-
 ## How to add a new function
 1. The source code for the function is in the directory `functions/`.
 2. Each function has a directory with a name that is the name of the function and the runtime environment. Example: `/functions/nodejs14` directory contains function codes named `nodejs14` and in the same runtime.
