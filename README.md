@@ -14,7 +14,7 @@ gcloud config set project PROJECT_ID
 
 ### Create variables file
 ```
-echo "gcp-project = \""$(gcloud config get-value project)"\"" >> terraform/terraform.tfvars
+echo "gcp_project = \""$(gcloud config get-value project)"\"" >> terraform/terraform.tfvars
 ```
 
 ### Go to terraform/
