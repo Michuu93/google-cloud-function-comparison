@@ -38,6 +38,12 @@ terraform apply -auto-approve
 curl "https://europe-west1-$(gcloud config get-value project).cloudfunctions.net/nodejs14" -H "Authorization: bearer $(gcloud auth print-identity-token)"
 ```
 
+### Run load tests
+In gatling folder run
+```
+mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token) -Dregion=europe-west1
+```
+
 ### Delete resources
 ```
 terraform destroy -auto-approve
