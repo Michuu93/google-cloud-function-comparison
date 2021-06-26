@@ -1,5 +1,5 @@
 variable "gcp_project" {}
-variable "gcp_region" {}
+variable "function_region" {}
 variable "function_name" {}
 variable "runtime" {}
 variable "entry_point" {}

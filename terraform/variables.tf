@@ -1,7 +1,5 @@
 variable "gcp_project" {}
 variable "gcp_region" {
-  //  Internal error (HTTP 500): Failed to initialize region (action ID: 7d75de3170745c65)
-  //  default = "europe-central2"
   default = "europe-west1"
 }
 variable "function_memory" {
@@ -9,6 +7,9 @@ variable "function_memory" {
 }
 variable "function_max_instances" {
   default = 1
+}
+variable "function_regions" {
+  default = ["europe-west1", "europe-central2"]
 }
 variable "functions" {
   default = [

@@ -4,7 +4,7 @@ locals {
 
 data "archive_file" "source" {
   type        = "zip"
-  source_dir  = "${var.source_root_dir}/${var.function_name}"
+  source_dir  = "${var.source_root_dir}/${var.runtime}"
   output_path = "/tmp/${var.function_name}-${local.timestamp}.zip"
 }
 
@@ -19,7 +19,7 @@ resource "google_cloudfunctions_function" "function" {
   name                  = var.function_name
   runtime               = var.runtime
   available_memory_mb   = var.function_memory
-  region                = var.gcp_region
+  region                = var.function_region
   source_archive_bucket = var.bucket_name
   source_archive_object = google_storage_bucket_object.zip.name
   max_instances         = var.function_max_instances

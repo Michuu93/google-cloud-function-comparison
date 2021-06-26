@@ -22,12 +22,27 @@ resource "google_storage_bucket" "bucket" {
   force_destroy = true
 }
 
+locals {
+  function_list = flatten([
+    for function in var.functions : [
+      for region in var.function_regions : {
+        runtime     = function.runtime
+        entry_point = function.entry_point
+        name        = "${region}_${function.runtime}"
+        region      = region
+      }
+    ]
+  ])
+}
+
 module "function" {
-  for_each               = { for function in var.functions : function.runtime => function }
+  for_each = {
+    for function in local.function_list : function.name => function
+  }
   source                 = "./modules/function"
   gcp_project            = var.gcp_project
-  gcp_region             = var.gcp_region
-  function_name          = each.value.runtime
+  function_region        = each.value.region
+  function_name          = each.value.name
   runtime                = each.value.runtime
   entry_point            = each.value.entry_point
   function_max_instances = var.function_max_instances
