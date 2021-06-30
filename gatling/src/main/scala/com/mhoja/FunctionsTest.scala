@@ -23,7 +23,7 @@ class FunctionsTest extends Simulation {
       val baseUrl: String = "https://" + region + "-" + project + ".cloudfunctions.net"
       println(s"baseUrl=$baseUrl")
 
-      var httpProtocol: HttpProtocolBuilder = http
+      val httpProtocol: HttpProtocolBuilder = http
         .baseUrl(baseUrl)
         .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
         .acceptEncodingHeader("gzip, deflate")
