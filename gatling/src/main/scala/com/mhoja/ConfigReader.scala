@@ -12,20 +12,73 @@ object ConfigReader {
   private val defaultVarFileName: String = "variables.tf"
   private val customVarFileName: String = "terraform.tfvars"
   private val terraformPath: String = "/terraform/"
+  private val defaultVarFilePath: String = getProjectPath + terraformPath + defaultVarFileName
+  private val customVarFilePath: String = getProjectPath + terraformPath + customVarFileName
 
   def main(args: Array[String]): Unit = {
     println(readConfig().toString)
   }
 
   def readConfig(): FunctionConfig = {
-    // TODO parse and merge custom variables
-    val defaultVarFilePath = getProjectPath + terraformPath + defaultVarFileName;
     val defaultVarFile = readFile(defaultVarFilePath)
     val defaultVarParsed = new HCLParser().parse(defaultVarFile)
+    val customVarFile = readFile(customVarFilePath)
+    val customVarParsed = new HCLParser().parse(customVarFile)
 
-    val regions = getRegions(defaultVarParsed)
-    val functions = getFunctions(defaultVarParsed)
-    new FunctionConfig(regions.asScala.toList, functions.asScala.toList)
+    val regions = getRegions(defaultVarParsed, customVarParsed)
+    val runtimes = getRuntimes(defaultVarParsed, customVarParsed)
+    new FunctionConfig(regions.asScala.toList, runtimes.asScala.toList)
+  }
+
+  private def readFile(path: String): String = {
+    val source = Source.fromFile(path)
+    try source.getLines mkString "\n" finally source.close()
+  }
+
+  private def getRegions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]) = {
+    Option(parseRegions(customVarParsed)).getOrElse(parseRegions(defaultVarParsed))
+  }
+
+  private def parseRegions(parsed: util.Map[String, AnyRef]): util.ArrayList[String] = {
+    val variables = parseVariables(parsed).get("function_regions")
+    if (variables == null) {
+      null
+    } else variables match {
+      case regions: util.ArrayList[String] =>
+        regions
+      case regions: util.LinkedHashMap[String, util.ArrayList[String]] =>
+        regions.get("default")
+    }
+  }
+
+  private def getRuntimes(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): util.List[String] = {
+    Option(parseRuntimes(customVarParsed)).getOrElse(parseRuntimes(defaultVarParsed))
+  }
+
+  private def parseRuntimes(parsed: util.Map[String, AnyRef]): util.List[String] = {
+    val variables = parseVariables(parsed).get("functions")
+    if (variables == null) {
+      null
+    } else variables match {
+      case functions: util.ArrayList[java.util.LinkedHashMap[String, String]] =>
+        functions
+          .stream()
+          .map(function => function.get("runtime")).collect(Collectors.toList[String])
+      case functions: util.LinkedHashMap[String, util.ArrayList[util.LinkedHashMap[String, String]]] =>
+        functions
+          .get("default")
+          .stream()
+          .map(function => function.get("runtime")).collect(Collectors.toList[String])
+    }
+  }
+
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    }
   }
 
   private def getProjectPath: String = {
@@ -35,28 +88,6 @@ object ConfigReader {
     } else {
       rootPath
     }
-  }
-
-  private def readFile(path: String): String = {
-    val source = Source.fromFile(path)
-    try source.getLines mkString "\n" finally source.close()
-  }
-
-  private def getRegions(parsed: util.Map[String, Object]): util.ArrayList[String] = {
-    val variables = getVariables(parsed)
-    variables.get("function_regions").asInstanceOf[util.LinkedHashMap[String, util.ArrayList[String]]].get("default")
-  }
-
-  private def getVariables(parsed: util.Map[String, Object]): util.LinkedHashMap[String, Object] = {
-    parsed.get("variable").asInstanceOf[util.LinkedHashMap[String, Object]]
-  }
-
-  private def getFunctions(parsed: util.Map[String, Object]): util.List[String] = {
-    val variables = getVariables(parsed)
-    variables.get("functions").asInstanceOf[util.LinkedHashMap[String, util.ArrayList[String]]]
-      .get("default").asInstanceOf[util.ArrayList[java.util.LinkedHashMap[String, String]]]
-      .stream()
-      .map(function => function.get("runtime")).collect(Collectors.toList[String])
   }
 
 }
