@@ -9,9 +9,7 @@ import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
 class FunctionsTest extends Simulation {
-  val project: String = System.getProperty("project")
-  val token: String = System.getProperty("token")
-  val config: FunctionConfig = ConfigReader.readConfig()
+  val config: TestConfig = ConfigReader.readConfig()
   println(config)
 
   setUp(configurePopulations()).assertions(global.successfulRequests.percent.is(100)) //asercja po testach
@@ -20,7 +18,7 @@ class FunctionsTest extends Simulation {
     val populations: ListBuffer[PopulationBuilder] = ListBuffer()
 
     config.regions.foreach(region => {
-      val baseUrl: String = "https://" + region + "-" + project + ".cloudfunctions.net"
+      val baseUrl = "https://" + region + "-" + config.project + ".cloudfunctions.net"
       println(s"baseUrl=$baseUrl")
 
       val httpProtocol: HttpProtocolBuilder = http
@@ -29,7 +27,7 @@ class FunctionsTest extends Simulation {
         .acceptEncodingHeader("gzip, deflate")
         .acceptLanguageHeader("en-US,en;q=0.5")
         .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
-        .header("Authorization", "bearer " + token)
+        .header("Authorization", "bearer " + config.token)
 
       var scn: ScenarioBuilder = scenario("FunctionsTest_" + region)
       config.runtimes.foreach(runtime => {

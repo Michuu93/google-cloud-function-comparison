@@ -16,10 +16,10 @@ object ConfigReader {
   private val customVarFilePath: String = getProjectPath + terraformPath + customVarFileName
 
   def main(args: Array[String]): Unit = {
-    println(readConfig().toString)
+    println(readConfig())
   }
 
-  def readConfig(): FunctionConfig = {
+  def readConfig(): TestConfig = {
     val defaultVarFile = readFile(defaultVarFilePath)
     val defaultVarParsed = new HCLParser().parse(defaultVarFile)
     val customVarFile = readFile(customVarFilePath)
@@ -27,7 +27,10 @@ object ConfigReader {
 
     val regions = getRegions(defaultVarParsed, customVarParsed)
     val runtimes = getRuntimes(defaultVarParsed, customVarParsed)
-    new FunctionConfig(regions.asScala.toList, runtimes.asScala.toList)
+
+    val project: String = System.getProperty("project")
+    val token: String = System.getProperty("token")
+    new TestConfig(project, token, regions.asScala.toList, runtimes.asScala.toList)
   }
 
   private def readFile(path: String): String = {
@@ -92,6 +95,6 @@ object ConfigReader {
 
 }
 
-class FunctionConfig(val regions: List[String], val runtimes: List[String]) {
-  override def toString: String = "regions=" + regions + "\nruntimes=" + runtimes
+class TestConfig(val project: String, val token: String, val regions: List[String], val runtimes: List[String]) {
+  override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nruntimes=" + runtimes
 }
