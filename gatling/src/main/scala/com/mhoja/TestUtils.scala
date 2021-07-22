@@ -5,16 +5,11 @@ import io.gatling.core.structure.PopulationBuilder
 object TestUtils {
 
   def toSequential(scenarios: List[PopulationBuilder]): PopulationBuilder = {
-    if (scenarios.isEmpty) {
-      return null
+    if (scenarios.length == 1) {
+      return scenarios.head
     }
-    if (scenarios.length > 1) {
-      val children = toSequential(scenarios.takeRight(scenarios.length - 1))
-      if (children != null) {
-        return scenarios.head.andThen(children)
-      }
-    }
-    scenarios.head
+    val children = toSequential(scenarios.takeRight(scenarios.length - 1))
+    scenarios.head.andThen(children)
   }
 
 }
