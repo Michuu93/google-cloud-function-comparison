@@ -16,7 +16,7 @@ object ConfigReader {
   private val customVarFilePath: String = getProjectPath + terraformPath + customVarFileName
 
   def main(args: Array[String]): Unit = {
-    println(readConfig())
+    readConfig()
   }
 
   def readConfig(): TestConfig = {
@@ -30,7 +30,10 @@ object ConfigReader {
 
     val project: String = System.getProperty("project")
     val token: String = System.getProperty("token")
-    new TestConfig(project, token, regions.asScala.toList, runtimes.asScala.toList)
+
+    val config = TestConfig(project, token, regions.asScala.toList, runtimes.asScala.toList)
+    println(config)
+    config
   }
 
   private def readFile(path: String): String = {
@@ -51,6 +54,15 @@ object ConfigReader {
         regions
       case regions: util.LinkedHashMap[String, util.ArrayList[String]] =>
         regions.get("default")
+    }
+  }
+
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
     }
   }
 
@@ -75,15 +87,6 @@ object ConfigReader {
     }
   }
 
-  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
-    val variables = parsed.get("variable")
-    if (variables == null) {
-      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    } else {
-      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    }
-  }
-
   private def getProjectPath: String = {
     val rootPath = os.pwd.toString()
     if (rootPath.endsWith("/gatling")) {
@@ -95,6 +98,6 @@ object ConfigReader {
 
 }
 
-class TestConfig(val project: String, val token: String, val regions: List[String], val runtimes: List[String]) {
+case class TestConfig(val project: String, val token: String, val regions: List[String], val runtimes: List[String]) {
   override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nruntimes=" + runtimes
 }

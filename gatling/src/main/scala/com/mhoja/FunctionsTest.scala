@@ -3,47 +3,48 @@ package com.mhoja
 import io.gatling.core.Predef._
 import io.gatling.core.structure.{PopulationBuilder, ScenarioBuilder}
 import io.gatling.http.Predef._
-import io.gatling.http.protocol.HttpProtocolBuilder
 
 import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
+case class ScenarioData(region: String, runtime: String) {}
+
 class FunctionsTest extends Simulation {
   val config: TestConfig = ConfigReader.readConfig()
-  println(config)
 
-  setUp(configurePopulations()).assertions(global.successfulRequests.percent.is(100)) //asercja po testach
+  var scenarios: List[PopulationBuilder] = prepareScenarios()
+  setUp(TestUtils.toSequential(scenarios)).assertions(global.successfulRequests.percent.is(100)) //asercja po testach
 
-  def configurePopulations(): List[PopulationBuilder] = {
+  def prepareScenarios(): List[PopulationBuilder] = {
     val populations: ListBuffer[PopulationBuilder] = ListBuffer()
 
-    config.regions.foreach(region => {
-      val baseUrl = "https://" + region + "-" + config.project + ".cloudfunctions.net"
-      println(s"baseUrl=$baseUrl")
+    config.regions.flatMap(region => config.runtimes.map(runtime => ScenarioData(region, runtime))).foreach(data => {
+      val baseUrl = "https://" + data.region + "-" + config.project + ".cloudfunctions.net"
+      val functionName = data.region + "_" + data.runtime
+      println(s"functionName=${functionName}: baseUrl=$baseUrl")
 
-      val httpProtocol: HttpProtocolBuilder = http
-        .baseUrl(baseUrl)
-        .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-        .acceptEncodingHeader("gzip, deflate")
-        .acceptLanguageHeader("en-US,en;q=0.5")
-        .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
-        .header("Authorization", "bearer " + config.token)
-
-      var scn: ScenarioBuilder = scenario("FunctionsTest_" + region)
-      config.runtimes.foreach(runtime => {
-        val functionName = region + "_" + runtime
-        scn = scn.exec(http(functionName)
+      val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.runtime)
+        .exec(http(functionName)
           .get("/" + functionName)
           .check(status.is(200), bodyString.is("Hello World!"))
         )
-      })
 
-      val population = scn.inject(constantConcurrentUsers(10) during 60) //model zamknięty, kontrolujemy liczbe uzytkowników
-        .protocols(httpProtocol)
+      val population = scn.inject(constantConcurrentUsers(10) during 10) //model zamknięty, kontrolujemy liczbe uzytkowników
+        .protocols(prepareHttpProtocol(baseUrl))
 
       populations += population
     })
 
     populations.toList
+  }
+
+  private def prepareHttpProtocol(baseUrl: String) = {
+    http
+      .baseUrl(baseUrl)
+      .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+      .acceptEncodingHeader("gzip, deflate")
+      .acceptLanguageHeader("en-US,en;q=0.5")
+      .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
+      .header("Authorization", "bearer " + config.token)
   }
 }
