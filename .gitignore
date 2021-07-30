@@ -52,6 +52,7 @@ dist
 test-output
 build.log
 node_modules
+__pycache__
 
 # misc
 .DS_Store
