@@ -26,12 +26,12 @@ object ConfigReader {
     val customVarParsed = new HCLParser().parse(customVarFile)
 
     val regions = getRegions(defaultVarParsed, customVarParsed)
-    val runtimes = getRuntimes(defaultVarParsed, customVarParsed)
+    val folders = getFolders(defaultVarParsed, customVarParsed)
 
     val project: String = System.getProperty("project")
     val token: String = System.getProperty("token")
 
-    val config = TestConfig(project, token, regions.asScala.toList, runtimes.asScala.toList)
+    val config = TestConfig(project, token, regions.asScala.toList, folders.asScala.toList)
     println(config)
     config
   }
@@ -66,11 +66,11 @@ object ConfigReader {
     }
   }
 
-  private def getRuntimes(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): util.List[String] = {
-    Option(parseRuntimes(customVarParsed)).getOrElse(parseRuntimes(defaultVarParsed))
+  private def getFolders(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): util.List[String] = {
+    Option(parseFolders(customVarParsed)).getOrElse(parseFolders(defaultVarParsed))
   }
 
-  private def parseRuntimes(parsed: util.Map[String, AnyRef]): util.List[String] = {
+  private def parseFolders(parsed: util.Map[String, AnyRef]): util.List[String] = {
     val variables = parseVariables(parsed).get("functions")
     if (variables == null) {
       null
@@ -78,12 +78,12 @@ object ConfigReader {
       case functions: util.ArrayList[java.util.LinkedHashMap[String, String]] =>
         functions
           .stream()
-          .map(function => function.get("runtime")).collect(Collectors.toList[String])
+          .map(function => function.get("folder")).collect(Collectors.toList[String])
       case functions: util.LinkedHashMap[String, util.ArrayList[util.LinkedHashMap[String, String]]] =>
         functions
           .get("default")
           .stream()
-          .map(function => function.get("runtime")).collect(Collectors.toList[String])
+          .map(function => function.get("folder")).collect(Collectors.toList[String])
     }
   }
 
@@ -98,6 +98,6 @@ object ConfigReader {
 
 }
 
-case class TestConfig(val project: String, val token: String, val regions: List[String], val runtimes: List[String]) {
-  override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nruntimes=" + runtimes
+case class TestConfig(val project: String, val token: String, val regions: List[String], val folders: List[String]) {
+  override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nfolders=" + folders
 }

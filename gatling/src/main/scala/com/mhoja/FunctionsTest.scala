@@ -7,7 +7,7 @@ import io.gatling.http.Predef._
 import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
-case class ScenarioData(region: String, runtime: String) {}
+case class ScenarioData(region: String, folder: String) {}
 
 class FunctionsTest extends Simulation {
   val config: TestConfig = ConfigReader.readConfig()
@@ -18,12 +18,12 @@ class FunctionsTest extends Simulation {
   def prepareScenarios(): List[PopulationBuilder] = {
     val populations: ListBuffer[PopulationBuilder] = ListBuffer()
 
-    config.regions.flatMap(region => config.runtimes.map(runtime => ScenarioData(region, runtime))).foreach(data => {
+    config.regions.flatMap(region => config.folders.filter(!_.endsWith("heavy")).map(folder => ScenarioData(region, folder))).foreach(data => {
       val baseUrl = "https://" + data.region + "-" + config.project + ".cloudfunctions.net"
-      val functionName = data.region + "_" + data.runtime
+      val functionName = data.region + "_" + data.folder
       println(s"functionName=${functionName}: baseUrl=$baseUrl")
 
-      val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.runtime)
+      val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.folder)
         .exec(http(functionName)
           .get("/" + functionName)
           .check(status.is(200), bodyString.is("Hello World!"))
