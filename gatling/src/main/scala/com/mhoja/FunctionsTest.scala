@@ -24,12 +24,14 @@ class FunctionsTest extends Simulation {
       println(s"functionName=${functionName}: baseUrl=$baseUrl")
 
       val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.folder)
-        .exec(http(functionName)
-          .get("/" + functionName)
-          .check(status.is(200), bodyString.is("Hello World!"))
-        )
+        .group(data.region) {
+          exec(http(functionName)
+            .get("/" + functionName)
+            .check(status.is(200), bodyString.is("Hello World!"))
+          )
+        }
 
-      val population = scn.inject(constantConcurrentUsers(10) during 10) //model zamknięty, kontrolujemy liczbe uzytkowników
+      val population = scn.inject(constantConcurrentUsers(20) during 120) //model zamknięty, kontrolujemy liczbe uzytkowników
         .protocols(prepareHttpProtocol(baseUrl))
 
       populations += population
