@@ -1,6 +1,3 @@
-.idea
-*.iml
-
 # Local .terraform directories
 **/.terraform/*
 
@@ -31,3 +28,34 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+# eclipse conf file
+.settings
+.classpath
+.project
+.manager
+.scala_dependencies
+.cache
+
+# idea conf files
+.idea
+*.iml
+*.ipr
+*.iws
+
+# building
+target
+build
+null
+tmp
+temp
+dist
+test-output
+build.log
+node_modules
+__pycache__
+
+# misc
+.DS_Store
+
+# project files to ignore
+!/results/.gitkeep

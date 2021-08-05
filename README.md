@@ -33,9 +33,17 @@ terraform apply -auto-approve
 ```
 
 ### Test function
-`europe-west1` is a region from variable `gcp-region`, `nodejs14` is function name (runtime)
+`europe-west3` is a region from variable `gcp-region`, `nodejs14` is function name (runtime)
 ```
-curl "https://europe-west1-$(gcloud config get-value project).cloudfunctions.net/europe-west1_nodejs14" -H "Authorization: bearer $(gcloud auth print-identity-token)"
+# Frankfurt
+curl "https://europe-west3-$(gcloud config get-value project).cloudfunctions.net/europe-west3_nodejs14" -H "Authorization: bearer $(gcloud auth print-identity-token)"
+curl "https://europe-west3-$(gcloud config get-value project).cloudfunctions.net/europe-west3_nodejs14_heavy" -d "Hello world" -H "content-type:text/plain" -H "Authorization: bearer $(gcloud auth print-identity-token)"
+
+# Warsaw
+curl "https://europe-central2-$(gcloud config get-value project).cloudfunctions.net/europe-central2_nodejs14" -H "Authorization: bearer $(gcloud auth print-identity-token)"
+
+# Iowa
+curl "https://us-central1-$(gcloud config get-value project).cloudfunctions.net/us-central1_nodejs14" -H "Authorization: bearer $(gcloud auth print-identity-token)"
 ```
 
 ### Run load tests

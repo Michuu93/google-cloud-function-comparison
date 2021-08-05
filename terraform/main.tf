@@ -28,7 +28,8 @@ locals {
       for region in var.function_regions : {
         runtime     = function.runtime
         entry_point = function.entry_point
-        name        = "${region}_${function.runtime}"
+        folder      = function.folder
+        name        = "${region}_${function.folder}"
         region      = region
       }
     ]
@@ -45,6 +46,7 @@ module "function" {
   function_name          = each.value.name
   runtime                = each.value.runtime
   entry_point            = each.value.entry_point
+  folder                 = each.value.folder
   function_max_instances = var.function_max_instances
   function_memory        = var.function_memory
   source_root_dir        = abspath("../functions")

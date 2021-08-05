@@ -4,7 +4,7 @@ locals {
 
 data "archive_file" "source" {
   type        = "zip"
-  source_dir  = "${var.source_root_dir}/${var.runtime}"
+  source_dir  = "${var.source_root_dir}/${var.folder}"
   output_path = "/tmp/${var.function_name}-${local.timestamp}.zip"
 }
 
