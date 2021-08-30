@@ -1,4 +1,4 @@
-package com.mhoja
+package com.mhoja.gatling
 
 import io.gatling.core.Predef._
 import io.gatling.core.structure.{PopulationBuilder, ScenarioBuilder}
@@ -13,7 +13,7 @@ class FunctionsTest extends Simulation {
   val config: TestConfig = ConfigReader.readConfig()
 
   var scenarios: List[PopulationBuilder] = prepareScenarios()
-  setUp(TestUtils.toSequential(scenarios)).assertions(global.successfulRequests.percent.is(100)) //asercja po testach
+  setUp(TestUtils.toSequential(scenarios)).assertions(global.successfulRequests.percent.is(100))
 
   def prepareScenarios(): List[PopulationBuilder] = {
     val populations: ListBuffer[PopulationBuilder] = ListBuffer()
@@ -31,7 +31,7 @@ class FunctionsTest extends Simulation {
           )
         }
 
-      val population = scn.inject(constantConcurrentUsers(20) during 120) //model zamknięty, kontrolujemy liczbe uzytkowników
+      val population = scn.inject(constantConcurrentUsers(20) during 120)
         .protocols(prepareHttpProtocol(baseUrl))
 
       populations += population

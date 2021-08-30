@@ -1,4 +1,4 @@
-package com.mhoja
+package com.mhoja.gatling
 
 import io.gatling.core.structure.PopulationBuilder
 
