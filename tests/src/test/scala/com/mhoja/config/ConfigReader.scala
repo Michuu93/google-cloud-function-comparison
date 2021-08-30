@@ -1,4 +1,4 @@
-package com.mhoja.gatling
+package com.mhoja.config
 
 import com.bertramlabs.plugins.hcl4j.HCLParser
 

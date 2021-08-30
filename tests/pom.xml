@@ -21,6 +21,7 @@
         <gatling.version>3.5.0</gatling.version>
         <gatling-commons.version>3.6.0</gatling-commons.version>
         <gatling-maven-plugin.version>3.1.2</gatling-maven-plugin.version>
+        <scala-maven-plugin.version>4.5.4</scala-maven-plugin.version>
         <os-lib.version>0.7.8</os-lib.version>
         <hcl-parser.version>0.3.4</hcl-parser.version>
     </properties>
@@ -62,8 +63,21 @@
                 <artifactId>gatling-maven-plugin</artifactId>
                 <version>${gatling-maven-plugin.version}</version>
                 <configuration>
-                    <simulationsFolder>src/main</simulationsFolder>
+                    <simulationsFolder>src/test</simulationsFolder>
                     <simulationClass>com.mhoja.gatling.FunctionsTest</simulationClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>${scala-maven-plugin.version}</version>
+                <configuration>
+                    <launchers>
+                        <launcher>
+                            <id>coldstart</id>
+                            <mainClass>com.mhoja.coldstart.ColdStartTest</mainClass>
+                        </launcher>
+                    </launchers>
                 </configuration>
             </plugin>
         </plugins>

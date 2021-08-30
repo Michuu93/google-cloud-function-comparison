@@ -1,5 +1,6 @@
 package com.mhoja.gatling
 
+import com.mhoja.config.{ConfigReader, TestConfig}
 import io.gatling.core.Predef._
 import io.gatling.core.structure.{PopulationBuilder, ScenarioBuilder}
 import io.gatling.http.Predef._
