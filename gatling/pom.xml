@@ -56,13 +56,13 @@
     </dependencies>
 
     <build>
-        <testSourceDirectory>src/main/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>io.gatling</groupId>
                 <artifactId>gatling-maven-plugin</artifactId>
                 <version>${gatling-maven-plugin.version}</version>
                 <configuration>
+                    <simulationsFolder>src/main</simulationsFolder>
                     <simulationClass>com.mhoja.FunctionsTest</simulationClass>
                 </configuration>
             </plugin>
