@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>gatling-tests</artifactId>
+    <artifactId>tests</artifactId>
 
     <parent>
         <groupId>com.mhoja</groupId>
@@ -63,7 +63,7 @@
                 <version>${gatling-maven-plugin.version}</version>
                 <configuration>
                     <simulationsFolder>src/main</simulationsFolder>
-                    <simulationClass>com.mhoja.FunctionsTest</simulationClass>
+                    <simulationClass>com.mhoja.gatling.FunctionsTest</simulationClass>
                 </configuration>
             </plugin>
         </plugins>

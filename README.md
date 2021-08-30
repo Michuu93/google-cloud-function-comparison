@@ -47,7 +47,7 @@ curl "https://us-central1-$(gcloud config get-value project).cloudfunctions.net/
 ```
 
 ### Run load tests
-In gatling folder run
+In `/tests` folder run
 ```
 mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token)
 ```

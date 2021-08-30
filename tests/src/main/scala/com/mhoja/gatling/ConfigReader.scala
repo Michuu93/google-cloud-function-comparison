@@ -1,4 +1,4 @@
-package com.mhoja
+package com.mhoja.gatling
 
 import com.bertramlabs.plugins.hcl4j.HCLParser
 
@@ -41,7 +41,7 @@ object ConfigReader {
     try source.getLines() mkString "\n" finally source.close()
   }
 
-  private def getRegions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]) = {
+  private def getRegions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): util.ArrayList[String] = {
     Option(parseRegions(customVarParsed)).getOrElse(parseRegions(defaultVarParsed))
   }
 
@@ -54,15 +54,6 @@ object ConfigReader {
         regions
       case regions: util.LinkedHashMap[String, util.ArrayList[String]] =>
         regions.get("default")
-    }
-  }
-
-  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
-    val variables = parsed.get("variable")
-    if (variables == null) {
-      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    } else {
-      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
     }
   }
 
@@ -87,10 +78,19 @@ object ConfigReader {
     }
   }
 
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    }
+  }
+
   private def getProjectPath: String = {
     val rootPath = os.pwd.toString()
-    if (rootPath.endsWith("/gatling")) {
-      rootPath.substring(0, rootPath.length - "/gatling".length)
+    if (rootPath.endsWith("/tests")) {
+      rootPath.substring(0, rootPath.length - "/tests".length)
     } else {
       rootPath
     }
@@ -98,6 +98,6 @@ object ConfigReader {
 
 }
 
-case class TestConfig(val project: String, val token: String, val regions: List[String], val folders: List[String]) {
+case class TestConfig(project: String, token: String, regions: List[String], folders: List[String]) {
   override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nfolders=" + folders
 }

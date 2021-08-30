@@ -9,6 +9,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>gatling</module>
+        <module>tests</module>
     </modules>
 </project>
