@@ -38,7 +38,7 @@ object ConfigReader {
 
   private def readFile(path: String): String = {
     val source = Source.fromFile(path)
-    try source.getLines mkString "\n" finally source.close()
+    try source.getLines() mkString "\n" finally source.close()
   }
 
   private def getRegions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]) = {
