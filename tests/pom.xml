@@ -71,13 +71,15 @@
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>${scala-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <launchers>
-                        <launcher>
-                            <id>coldstart</id>
-                            <mainClass>com.mhoja.coldstart.ColdStartTest</mainClass>
-                        </launcher>
-                    </launchers>
+                    <mainClass>com.mhoja.coldstart.ColdStartTest</mainClass>
                 </configuration>
             </plugin>
         </plugins>
