@@ -1,7 +1,7 @@
 package com.mhoja.coldstart
 
 import com.mhoja.config.{ConfigReader, TestConfig}
-import de.vandermeer.asciitable.{AsciiTable, CWC_LongestWordMin}
+import de.vandermeer.asciitable.{AsciiTable, CWC_LongestLine}
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment
 
 import java.net.URI
@@ -16,12 +16,7 @@ object ColdStartTest {
   def main(args: Array[String]): Unit = {
     val config: TestConfig = ConfigReader.readConfig(args)
     val table = new AsciiTable
-    table.getRenderer.setCWC(new CWC_LongestWordMin(10))
-    table.addRule()
-    table.addRow(null, null, null, "Results").setTextAlignment(TextAlignment.CENTER)
-    table.addRule()
-    table.addRow("Name", null, null, "[ms]").getCells.get(3).getContext.setTextAlignment(TextAlignment.CENTER)
-    table.addRule()
+    addTableHeader(table)
 
     config.regions.foreach(region => {
       config.folders.filter(!_.endsWith("heavy")).foreach(folder => {
@@ -31,7 +26,7 @@ object ColdStartTest {
         val coldStartTime = responseTimes.head
         val averageTimeOfRemainingResponses = responseTimes.takeRight(requestsCount - 1).sum / (requestsCount - 1)
         val diff = coldStartTime - averageTimeOfRemainingResponses
-        table.addRow(functionName, coldStartTime, averageTimeOfRemainingResponses, diff)
+        table.addRow(functionName, coldStartTime, averageTimeOfRemainingResponses, diff).setTextAlignment(TextAlignment.RIGHT)
         table.addRule()
       })
     })
@@ -51,5 +46,14 @@ object ColdStartTest {
       responseTimes += elapsedTime
     }
     responseTimes.toArray
+  }
+
+  def addTableHeader(table: AsciiTable): Unit = {
+    table.getRenderer.setCWC(new CWC_LongestLine())
+    table.addRule()
+    table.addRow(null, null, null, "Results").setTextAlignment(TextAlignment.CENTER)
+    table.addRule()
+    table.addRow("Function name", "1st time [ms]", "avg remaining [ms]", "diff [ms]").setTextAlignment(TextAlignment.CENTER)
+    table.addRule()
   }
 }
