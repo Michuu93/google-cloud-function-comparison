@@ -22,7 +22,7 @@ class FunctionsTest extends Simulation {
     config.regions.flatMap(region => config.folders.filter(!_.endsWith("heavy")).map(folder => ScenarioData(region, folder))).foreach(data => {
       val baseUrl = "https://" + data.region + "-" + config.project + ".cloudfunctions.net"
       val functionName = data.region + "_" + data.folder
-      println(s"functionName=${functionName}: baseUrl=$baseUrl")
+      println(s"functionName=$functionName, baseUrl=$baseUrl")
 
       val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.folder)
         .group(data.region) {
