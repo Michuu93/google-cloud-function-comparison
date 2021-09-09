@@ -11,20 +11,25 @@ import scala.collection.mutable.ArrayBuffer
 
 object ColdStartTest {
   val client: HttpClient = HttpClient.newHttpClient
-  val requestsCount: Int = 5 // TODO as parameter
+  var requestsPerFunction: Int = 10
 
   def main(args: Array[String]): Unit = {
+    if (args != null && args.length == 3) {
+      requestsPerFunction = args(2).toInt
+    }
+    require(requestsPerFunction > 1, "Number of requests per function must be greater than 1")
+
     val config: TestConfig = ConfigReader.readConfig(args)
     val table = new AsciiTable
     addTableHeader(table)
 
     config.regions.foreach(region => {
-      config.folders.filter(!_.endsWith("heavy")).foreach(folder => {
+      config.folders.foreach(folder => {
         val functionName = region + "_" + folder
         val functionUrl = "https://" + region + "-" + config.project + ".cloudfunctions.net/" + functionName
-        val responseTimes = makeRequests(functionUrl, config.token, requestsCount)
+        val responseTimes = makeRequests(functionUrl, config.token, requestsPerFunction)
         val coldStartTime = responseTimes.head
-        val averageTimeOfRemainingResponses = responseTimes.takeRight(requestsCount - 1).sum / (requestsCount - 1)
+        val averageTimeOfRemainingResponses = responseTimes.takeRight(requestsPerFunction - 1).sum / (requestsPerFunction - 1)
         val diff = coldStartTime - averageTimeOfRemainingResponses
         table.addRow(functionName, coldStartTime, averageTimeOfRemainingResponses, diff).setTextAlignment(TextAlignment.RIGHT)
         table.addRule()
@@ -41,7 +46,9 @@ object ColdStartTest {
       val request = HttpRequest.newBuilder.uri(URI.create(functionUrl)).header("Authorization", "bearer " + token).build
       val startTime = System.currentTimeMillis
       val response = client.send(request, BodyHandlers.ofString)
-      // TODO check response status/body
+      if (response.statusCode() != 200) {
+        println(s"Request to ${functionUrl} returns status code ${response.statusCode()}")
+      }
       val elapsedTime = System.currentTimeMillis - startTime
       responseTimes += elapsedTime
     }

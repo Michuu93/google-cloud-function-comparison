@@ -57,6 +57,12 @@ In `/tests` folder run
 ```
 mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)"
 ```
+or
+```
+mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)|20"
+```
+where `20` is number of requests per function (default 10).
+The first response time is compared to the mean of the remaining response times (for 10 requests, the average is taken from 10-1=9 requests).
 
 ### Delete resources
 ```
