@@ -1,4 +1,4 @@
-package com.mhoja.gatling
+package com.mhoja.config
 
 import com.bertramlabs.plugins.hcl4j.HCLParser
 
@@ -19,7 +19,7 @@ object ConfigReader {
     readConfig()
   }
 
-  def readConfig(): TestConfig = {
+  def readConfig(args: Array[String] = Array(System.getProperty("project"), System.getProperty("token"))): TestConfig = {
     val defaultVarFile = readFile(defaultVarFilePath)
     val defaultVarParsed = new HCLParser().parse(defaultVarFile)
     val customVarFile = readFile(customVarFilePath)
@@ -28,8 +28,8 @@ object ConfigReader {
     val regions = getRegions(defaultVarParsed, customVarParsed)
     val folders = getFolders(defaultVarParsed, customVarParsed)
 
-    val project: String = System.getProperty("project")
-    val token: String = System.getProperty("token")
+    val project = args.head
+    val token = args(1)
 
     val config = TestConfig(project, token, regions.asScala.toList, folders.asScala.toList)
     println(config)

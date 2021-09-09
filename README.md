@@ -52,6 +52,12 @@ In `/tests` folder run
 mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token)
 ```
 
+### Run cold start tests
+In `/tests` folder run
+```
+mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)"
+```
+
 ### Delete resources
 ```
 terraform destroy -auto-approve

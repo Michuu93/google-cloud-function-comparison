@@ -1,5 +1,6 @@
 package com.mhoja.gatling
 
+import com.mhoja.config.{ConfigReader, TestConfig}
 import io.gatling.core.Predef._
 import io.gatling.core.structure.{PopulationBuilder, ScenarioBuilder}
 import io.gatling.http.Predef._
@@ -21,7 +22,7 @@ class FunctionsTest extends Simulation {
     config.regions.flatMap(region => config.folders.filter(!_.endsWith("heavy")).map(folder => ScenarioData(region, folder))).foreach(data => {
       val baseUrl = "https://" + data.region + "-" + config.project + ".cloudfunctions.net"
       val functionName = data.region + "_" + data.folder
-      println(s"functionName=${functionName}: baseUrl=$baseUrl")
+      println(s"functionName=$functionName, baseUrl=$baseUrl")
 
       val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.folder)
         .group(data.region) {
