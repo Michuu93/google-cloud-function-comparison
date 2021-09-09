@@ -27,12 +27,12 @@ object ConfigReader {
     val customVarParsed = new HCLParser().parse(customVarFile)
 
     val regions = getRegions(defaultVarParsed, customVarParsed)
-    val folders = getFolders(defaultVarParsed, customVarParsed)
+    val folders = getFolders(defaultVarParsed, customVarParsed).filter(!_.endsWith("heavy")) // TODO tests modes (simple/heavy)
 
     val project = args.head
     val token = args(1)
 
-    val config = TestConfig(project, token, regions.asScala.toList, folders.asScala.toList)
+    val config = TestConfig(project, token, regions.asScala.toList, folders)
     println(config)
     config
   }
@@ -67,8 +67,8 @@ object ConfigReader {
     }
   }
 
-  private def getFolders(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): util.List[String] = {
-    Option(parseFolders(customVarParsed)).getOrElse(parseFolders(defaultVarParsed))
+  private def getFolders(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): List[String] = {
+    Option(parseFolders(customVarParsed)).getOrElse(parseFolders(defaultVarParsed)).asScala.toList
   }
 
   private def parseFolders(parsed: util.Map[String, AnyRef]): util.List[String] = {
@@ -79,12 +79,14 @@ object ConfigReader {
       case functions: util.ArrayList[java.util.LinkedHashMap[String, String]] =>
         functions
           .stream()
-          .map(function => function.get("folder")).collect(Collectors.toList[String])
+          .map(function => function.get("folder"))
+          .collect(Collectors.toList[String])
       case functions: util.LinkedHashMap[String, util.ArrayList[util.LinkedHashMap[String, String]]] =>
         functions
           .get("default")
           .stream()
-          .map(function => function.get("folder")).collect(Collectors.toList[String])
+          .map(function => function.get("folder"))
+          .collect(Collectors.toList[String])
     }
   }
 

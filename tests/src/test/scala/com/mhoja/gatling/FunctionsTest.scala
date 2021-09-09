@@ -19,7 +19,7 @@ class FunctionsTest extends Simulation {
   def prepareScenarios(): List[PopulationBuilder] = {
     val populations: ListBuffer[PopulationBuilder] = ListBuffer()
 
-    config.regions.flatMap(region => config.folders.filter(!_.endsWith("heavy")).map(folder => ScenarioData(region, folder))).foreach(data => {
+    config.regions.flatMap(region => config.folders.map(folder => ScenarioData(region, folder))).foreach(data => {
       val baseUrl = "https://" + data.region + "-" + config.project + ".cloudfunctions.net"
       val functionName = data.region + "_" + data.folder
       println(s"functionName=$functionName, baseUrl=$baseUrl")

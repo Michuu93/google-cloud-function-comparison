@@ -24,7 +24,7 @@ object ColdStartTest {
     addTableHeader(table)
 
     config.regions.foreach(region => {
-      config.folders.filter(!_.endsWith("heavy")).foreach(folder => {
+      config.folders.foreach(folder => {
         val functionName = region + "_" + folder
         val functionUrl = "https://" + region + "-" + config.project + ".cloudfunctions.net/" + functionName
         val responseTimes = makeRequests(functionUrl, config.token, requestsPerFunction)
