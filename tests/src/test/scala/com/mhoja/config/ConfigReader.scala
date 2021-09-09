@@ -20,6 +20,7 @@ object ConfigReader {
   }
 
   def readConfig(args: Array[String] = Array(System.getProperty("project"), System.getProperty("token"))): TestConfig = {
+    require(args.length >= 2, "Invalid arguments, required GCP project and access token")
     val defaultVarFile = readFile(defaultVarFilePath)
     val defaultVarParsed = new HCLParser().parse(defaultVarFile)
     val customVarFile = readFile(customVarFilePath)
@@ -57,6 +58,15 @@ object ConfigReader {
     }
   }
 
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    }
+  }
+
   private def getFolders(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): util.List[String] = {
     Option(parseFolders(customVarParsed)).getOrElse(parseFolders(defaultVarParsed))
   }
@@ -75,15 +85,6 @@ object ConfigReader {
           .get("default")
           .stream()
           .map(function => function.get("folder")).collect(Collectors.toList[String])
-    }
-  }
-
-  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
-    val variables = parsed.get("variable")
-    if (variables == null) {
-      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    } else {
-      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
     }
   }
 
