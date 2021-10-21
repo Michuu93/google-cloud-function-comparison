@@ -1,4 +1,4 @@
-# Google Coud Functions comparison
+# Google Coud Functions Comparison
 
 ## How to run
 
