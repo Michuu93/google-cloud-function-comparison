@@ -38,7 +38,16 @@ variable "functions" {
       runtime     = "ruby27"
       entry_point = "hello_world"
     },
-
+    {
+      folder     = "dotnet3"
+      runtime     = "dotnet3"
+      entry_point = "SimpleHttpFunction.Function"
+    },
+    {
+      folder     = "php74"
+      runtime     = "php74"
+      entry_point = "hello_world"
+    },
     {
       folder     = "java11_heavy"
       runtime     = "java11"
