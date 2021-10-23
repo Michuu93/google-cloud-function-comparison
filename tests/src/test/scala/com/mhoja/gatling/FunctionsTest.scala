@@ -1,6 +1,6 @@
 package com.mhoja.gatling
 
-import com.mhoja.config.{ConfigReader, TestConfig}
+import com.mhoja.config.{ConfigReader, Function, TestConfig}
 import io.gatling.core.Predef._
 import io.gatling.core.structure.{PopulationBuilder, ScenarioBuilder}
 import io.gatling.http.Predef._
@@ -8,9 +8,11 @@ import io.gatling.http.Predef._
 import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
-case class ScenarioData(region: String, folder: String) {}
+case class ScenarioData(function: Function, region: String) {}
 
 class FunctionsTest extends Simulation {
+  val concurrentUsers: Int = System.getProperty("users", "20").toInt
+  val testDuration: Int = System.getProperty("duration", "120").toInt
   val config: TestConfig = ConfigReader.readConfig()
 
   var scenarios: List[PopulationBuilder] = prepareScenarios()
@@ -19,12 +21,12 @@ class FunctionsTest extends Simulation {
   def prepareScenarios(): List[PopulationBuilder] = {
     val populations: ListBuffer[PopulationBuilder] = ListBuffer()
 
-    config.regions.flatMap(region => config.folders.map(folder => ScenarioData(region, folder))).foreach(data => {
+    config.regions.flatMap(region => config.functions.map(function => ScenarioData(function, region))).foreach(data => {
       val baseUrl = "https://" + data.region + "-" + config.project + ".cloudfunctions.net"
-      val functionName = data.region + "_" + data.folder
+      val functionName = data.function.getFunctionName(data.region)
       println(s"functionName=$functionName, baseUrl=$baseUrl")
 
-      val scn: ScenarioBuilder = scenario("FunctionsTest_" + data.region + "_" + data.folder)
+      val scn: ScenarioBuilder = scenario(functionName)
         .group(data.region) {
           exec(http(functionName)
             .get("/" + functionName)
@@ -32,7 +34,7 @@ class FunctionsTest extends Simulation {
           )
         }
 
-      val population = scn.inject(constantConcurrentUsers(20) during 120)
+      val population = scn.inject(constantConcurrentUsers(concurrentUsers) during testDuration)
         .protocols(prepareHttpProtocol(baseUrl))
 
       populations += population
