@@ -9,59 +9,44 @@ variable "function_max_instances" {
   default = 1
 }
 variable "function_regions" {
-  default = ["europe-west3", "europe-central2", "us-central1"]
+  default = ["europe-west3", "us-central1", "asia-east2"]
 }
 variable "functions" {
   default = [
     {
-      folder     = "nodejs14"
+      folder      = "nodejs"
       runtime     = "nodejs14"
       entry_point = "helloWorld"
     },
     {
-      folder     = "go113"
+      folder      = "go"
       runtime     = "go113"
       entry_point = "HelloWorld"
     },
     {
-      folder     = "java11"
+      folder      = "java11"
       runtime     = "java11"
       entry_point = "com.example.Example"
     },
     {
-      folder     = "python39"
+      folder      = "python"
       runtime     = "python39"
       entry_point = "hello_world"
     },
     {
-      folder     = "ruby27"
+      folder      = "ruby"
       runtime     = "ruby27"
       entry_point = "hello_world"
     },
     {
-      folder     = "dotnet3"
+      folder      = "dotnet3"
       runtime     = "dotnet3"
       entry_point = "SimpleHttpFunction.Function"
     },
     {
-      folder     = "php74"
+      folder      = "php74"
       runtime     = "php74"
       entry_point = "hello_world"
-    },
-    {
-      folder     = "java11_heavy"
-      runtime     = "java11"
-      entry_point = "com.example.Heavy"
-    },
-    {
-      folder     = "nodejs14_heavy"
-      runtime     = "nodejs14"
-      entry_point = "heavy"
-    },
-    {
-      folder     = "python39_heavy"
-      runtime     = "python39"
-      entry_point = "heavy"
     }
   ]
 }

@@ -29,7 +29,7 @@ locals {
         runtime     = function.runtime
         entry_point = function.entry_point
         folder      = function.folder
-        name        = "${region}_${function.folder}"
+        name        = "${function.runtime}_${region}_${function.folder}"
         region      = region
       }
     ]

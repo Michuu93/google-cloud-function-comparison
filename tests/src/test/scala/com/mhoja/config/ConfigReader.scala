@@ -27,12 +27,12 @@ object ConfigReader {
     val customVarParsed = new HCLParser().parse(customVarFile)
 
     val regions = getRegions(defaultVarParsed, customVarParsed)
-    val folders = getFolders(defaultVarParsed, customVarParsed).filter(!_.endsWith("heavy")) // TODO tests modes (simple/heavy)
+    val functions = getFunctions(defaultVarParsed, customVarParsed).filter(function => !function.folder.endsWith("heavy")) // TODO tests modes (simple/heavy)
 
     val project = args.head
     val token = args(1)
 
-    val config = TestConfig(project, token, regions.asScala.toList, folders)
+    val config = TestConfig(project, token, regions.asScala.toList, functions)
     println(config)
     config
   }
@@ -58,20 +58,11 @@ object ConfigReader {
     }
   }
 
-  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
-    val variables = parsed.get("variable")
-    if (variables == null) {
-      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    } else {
-      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    }
+  private def getFunctions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): List[Function] = {
+    Option(parseFunctions(customVarParsed)).getOrElse(parseFunctions(defaultVarParsed)).asScala.toList
   }
 
-  private def getFolders(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): List[String] = {
-    Option(parseFolders(customVarParsed)).getOrElse(parseFolders(defaultVarParsed)).asScala.toList
-  }
-
-  private def parseFolders(parsed: util.Map[String, AnyRef]): util.List[String] = {
+  private def parseFunctions(parsed: util.Map[String, AnyRef]): util.List[Function] = {
     val variables = parseVariables(parsed).get("functions")
     if (variables == null) {
       null
@@ -79,14 +70,23 @@ object ConfigReader {
       case functions: util.ArrayList[java.util.LinkedHashMap[String, String]] =>
         functions
           .stream()
-          .map(function => function.get("folder"))
-          .collect(Collectors.toList[String])
+          .map(function => Function(function.get("runtime"), function.get("folder")))
+          .collect(Collectors.toList[Function])
       case functions: util.LinkedHashMap[String, util.ArrayList[util.LinkedHashMap[String, String]]] =>
         functions
           .get("default")
           .stream()
-          .map(function => function.get("folder"))
-          .collect(Collectors.toList[String])
+          .map(function => Function(function.get("runtime"), function.get("folder")))
+          .collect(Collectors.toList[Function])
+    }
+  }
+
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
     }
   }
 
@@ -101,6 +101,12 @@ object ConfigReader {
 
 }
 
-case class TestConfig(project: String, token: String, regions: List[String], folders: List[String]) {
-  override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nfolders=" + folders
+case class TestConfig(project: String, token: String, regions: List[String], functions: List[Function]) {
+  override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nfunctions=" + functions
 }
+
+case class Function(runtime: String, folder: String) {
+  override def toString: String = "[" + runtime + "/" + folder + "]"
+
+  def getFunctionName(region: String): String = runtime + "_" + region + "_" + folder
+};

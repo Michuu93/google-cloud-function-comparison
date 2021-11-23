@@ -84,7 +84,16 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.mhoja.coldstart.ColdStartTest</mainClass>
+                    <launchers>
+                        <launcher>
+                            <id>availability</id>
+                            <mainClass>com.mhoja.availability.AvailabilityTest</mainClass>
+                        </launcher>
+                        <launcher>
+                            <id>coldstarts</id>
+                            <mainClass>com.mhoja.coldstart.ColdStartTest</mainClass>
+                        </launcher>
+                    </launchers>
                 </configuration>
             </plugin>
         </plugins>

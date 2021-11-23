@@ -1,5 +1,11 @@
 # Google Coud Functions Comparison
 
+## Requirements
+- Terraform
+- Scala 2.13.3
+- Java 11
+- Maven
+
 ## How to run
 
 ### Authenticate with GCP
@@ -32,23 +38,34 @@ terraform init && terraform plan
 terraform apply -auto-approve
 ```
 
-### Test function
-Use test.sh and follow questions.
+### Before running the tests, check the availability of the functions
+In `/tests` folder run
+```
+mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)" -Dlauncher=availability
+```
 
 ### Run load tests
 In `/tests` folder run
 ```
 mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token)
 ```
+or
+```
+mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token) -Dusers=1 -Dduration=60
+```
+where `users` is number of concurrent users and `duration` is test duration in seconds (default 20 users and 120 seconds).
+
+**Remember that the auth token has a limited lifetime, in the case of a longer test, the functions will responses with status 401.**
 
 ### Run cold start tests
+Make sure that no active instance of any function exists before running the cold starts test.  
 In `/tests` folder run
 ```
-mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)"
+mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)" -Dlauncher=coldstarts
 ```
 or
 ```
-mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)|20"
+mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)|20" -Dlauncher=coldstarts
 ```
 where `20` is number of requests per function (default 10).
 The first response time is compared to the mean of the remaining response times (for 10 requests, the average is taken from 10-1=9 requests).
@@ -60,7 +77,6 @@ terraform destroy -auto-approve
 
 ## How to add a new function
 1. The source code for the function is in the directory `functions/`.
-2. Each function has a directory with a name that is the runtime environment. Example: `/functions/nodejs14` directory contains function codes for runtime nodejs14.
-3. For each region in variable `function_regions`, a function for each runtime environment will be created. The name of the function will be `REGION_RUNTIME_ENVIRONMENT`, e.g. `europe-west1_nodejs14`.
-4. Add function folder, runtime and entry point to `variables.tf`. The `functions` variable contains a list of objects defining function location. You can overwrite the variable in the `terraform.tfvars` file.
-5. If you want to change the function regions, add them in the `function_regions` list variable.
+2. For each region in variable `function_regions`, a function for each runtime environment will be created. The name of the function will be `RUNTIME_REGION_FOLDER`, e.g. `nodejs14_europe-west1_nodejs`.
+3. Add function folder, runtime and entry point to `variables.tf`. The `functions` variable contains a list of objects defining function location. You can overwrite the variable in the `terraform.tfvars` file.
+4. If you want to change the function regions, add them in the `function_regions` list variable.
