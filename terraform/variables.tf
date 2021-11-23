@@ -9,34 +9,14 @@ variable "function_max_instances" {
   default = 1
 }
 variable "function_regions" {
-  default = ["europe-west3", "europe-central2", "us-central1"]
+  default = ["europe-west3", "us-central1", "asia-east2"]
 }
 variable "functions" {
   default = [
     {
       folder      = "nodejs"
-      runtime     = "nodejs16"
-      entry_point = "helloWorld"
-    },
-    {
-      folder      = "nodejs"
       runtime     = "nodejs14"
       entry_point = "helloWorld"
-    },
-    {
-      folder      = "nodejs"
-      runtime     = "nodejs12"
-      entry_point = "helloWorld"
-    },
-    {
-      folder      = "nodejs"
-      runtime     = "nodejs10"
-      entry_point = "helloWorld"
-    },
-    {
-      folder      = "go"
-      runtime     = "go116"
-      entry_point = "HelloWorld"
     },
     {
       folder      = "go"
@@ -54,16 +34,6 @@ variable "functions" {
       entry_point = "hello_world"
     },
     {
-      folder      = "python"
-      runtime     = "python38"
-      entry_point = "hello_world"
-    },
-    {
-      folder      = "python"
-      runtime     = "python37"
-      entry_point = "hello_world"
-    },
-    {
       folder      = "ruby"
       runtime     = "ruby27"
       entry_point = "hello_world"
@@ -77,21 +47,6 @@ variable "functions" {
       folder      = "php74"
       runtime     = "php74"
       entry_point = "hello_world"
-    },
-    {
-      folder      = "java11_heavy"
-      runtime     = "java11"
-      entry_point = "com.example.Heavy"
-    },
-    {
-      folder      = "nodejs_heavy"
-      runtime     = "nodejs14"
-      entry_point = "heavy"
-    },
-    {
-      folder      = "python_heavy"
-      runtime     = "python39"
-      entry_point = "heavy"
     }
   ]
 }
