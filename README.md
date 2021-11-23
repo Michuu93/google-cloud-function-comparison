@@ -4,6 +4,7 @@
 - Terraform
 - Scala 2.13.3
 - Java 11
+- Maven
 
 ## How to run
 
@@ -53,6 +54,8 @@ or
 mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token) -Dusers=1 -Dduration=60
 ```
 where `users` is number of concurrent users and `duration` is test duration in seconds (default 20 users and 120 seconds).
+
+**Remember that the auth token has a limited lifetime, in the case of a longer test, the functions will responses with status 401.**
 
 ### Run cold start tests
 Make sure that no active instance of any function exists before running the cold starts test.  
