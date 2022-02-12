@@ -14,8 +14,8 @@ object ColdStartTest {
   var requestsPerFunction: Int = 10
 
   def main(args: Array[String]): Unit = {
-    if (args != null && args.length == 3) {
-      requestsPerFunction = args(2).toInt
+    if (args != null && args.length == 2) {
+      requestsPerFunction = args(1).toInt
     }
     require(requestsPerFunction > 1, "Number of requests per function must be greater than 1")
 
