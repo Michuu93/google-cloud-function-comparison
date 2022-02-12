@@ -16,7 +16,7 @@ object AvailabilityTest {
       config.functions.foreach(function => {
         val functionName = function.getFunctionName(region)
         val functionUrl = "https://" + region + "-" + config.project + ".cloudfunctions.net/" + functionName
-        makeRequest(functionUrl, config.token)
+        makeRequest(functionUrl, config.getToken)
       })
     })
   }

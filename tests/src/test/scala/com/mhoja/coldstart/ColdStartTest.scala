@@ -27,7 +27,7 @@ object ColdStartTest {
       config.functions.foreach(function => {
         val functionName = function.getFunctionName(region)
         val functionUrl = "https://" + region + "-" + config.project + ".cloudfunctions.net/" + functionName
-        val responseTimes = makeRequests(functionUrl, config.token, requestsPerFunction)
+        val responseTimes = makeRequests(functionUrl, config.getToken, requestsPerFunction)
         val coldStartTime = responseTimes.head
         val averageTimeOfRemainingResponses = responseTimes.takeRight(requestsPerFunction - 1).sum / (requestsPerFunction - 1)
         val diff = coldStartTime - averageTimeOfRemainingResponses

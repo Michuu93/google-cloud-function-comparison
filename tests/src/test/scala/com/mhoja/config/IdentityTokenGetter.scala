@@ -9,7 +9,7 @@ object IdentityTokenGetter {
     println(getIdentityToken)
   }
 
-  def getIdentityToken: String = {
+  private[config] def getIdentityToken: String = {
     println(s"Getting identity token by command '${identityTokenCommand}'")
     Process(identityTokenCommand).!!.trim
   }

@@ -27,11 +27,27 @@ class FunctionsTest extends Simulation {
       println(s"functionName=$functionName, baseUrl=$baseUrl")
 
       val scn: ScenarioBuilder = scenario(functionName)
+        .exec(session => {
+          session.set("identityToken", config.getToken)
+        })
         .group(data.region) {
-          exec(http(functionName)
-            .get("/" + functionName)
-            .check(status.is(200), bodyString.is("Hello World!"))
-          )
+          exec(
+            http(functionName)
+              .get("/" + functionName)
+              .header("Authorization", "bearer ${identityToken}")
+              .check(
+                status.in(200, 401).saveAs("httpStatus"),
+                checkIf(session => session("httpStatus").as[Integer].equals(200)) {
+                  bodyString.is("Hello World!")
+                }
+              )
+          ).doIf(session => session("httpStatus").as[Integer].equals(401)) {
+            exec(session => {
+              val newToken = config.getNewToken
+              println(s"Refreshed token=${newToken}")
+              session.remove("httpStatus").set("identityToken", newToken)
+            })
+          }
         }
 
       val population = scn.inject(constantConcurrentUsers(concurrentUsers) during testDuration)
@@ -50,6 +66,5 @@ class FunctionsTest extends Simulation {
       .acceptEncodingHeader("gzip, deflate")
       .acceptLanguageHeader("en-US,en;q=0.5")
       .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
-      .header("Authorization", "bearer " + config.token)
   }
 }

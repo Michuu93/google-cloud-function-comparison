@@ -58,6 +58,15 @@ object ConfigReader {
     }
   }
 
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    }
+  }
+
   private def getFunctions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): List[Function] = {
     Option(parseFunctions(customVarParsed)).getOrElse(parseFunctions(defaultVarParsed)).asScala.toList
   }
@@ -81,15 +90,6 @@ object ConfigReader {
     }
   }
 
-  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
-    val variables = parsed.get("variable")
-    if (variables == null) {
-      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    } else {
-      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    }
-  }
-
   private def getProjectPath: String = {
     val rootPath = os.pwd.toString()
     if (rootPath.endsWith("/tests")) {
@@ -101,8 +101,17 @@ object ConfigReader {
 
 }
 
-case class TestConfig(project: String, token: String, regions: List[String], functions: List[Function]) {
+case class TestConfig(project: String, private var token: String, regions: List[String], functions: List[Function]) {
   override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nfunctions=" + functions
+
+  def getToken: String = {
+    token
+  }
+
+  def getNewToken: String = {
+    token = IdentityTokenGetter.getIdentityToken
+    token
+  }
 }
 
 case class Function(runtime: String, folder: String) {
