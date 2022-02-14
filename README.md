@@ -41,31 +41,29 @@ terraform apply -auto-approve
 ### Before running the tests, check the availability of the functions
 In `/tests` folder run
 ```
-mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)" -Dlauncher=availability
+mvn scala:run -DaddArgs="$(gcloud config get-value project)" -Dlauncher=availability
 ```
 
 ### Run load tests
 In `/tests` folder run
 ```
-mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token)
+mvn gatling:test -Dproject=$(gcloud config get-value project)
 ```
 or
 ```
-mvn gatling:test -Dproject=$(gcloud config get-value project) -Dtoken=$(gcloud auth print-identity-token) -Dusers=1 -Dduration=60
+mvn gatling:test -Dproject=$(gcloud config get-value project) -Dusers=1 -Dduration=60
 ```
 where `users` is number of concurrent users and `duration` is test duration in seconds (default 20 users and 120 seconds).
-
-**Remember that the auth token has a limited lifetime, in the case of a longer test, the functions will responses with status 401.**
 
 ### Run cold start tests
 Make sure that no active instance of any function exists before running the cold starts test.  
 In `/tests` folder run
 ```
-mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)" -Dlauncher=coldstarts
+mvn scala:run -DaddArgs="$(gcloud config get-value project)" -Dlauncher=coldstarts
 ```
 or
 ```
-mvn scala:run -DaddArgs="$(gcloud config get-value project)|$(gcloud auth print-identity-token)|20" -Dlauncher=coldstarts
+mvn scala:run -DaddArgs="$(gcloud config get-value project)|20" -Dlauncher=coldstarts
 ```
 where `20` is number of requests per function (default 10).
 The first response time is compared to the mean of the remaining response times (for 10 requests, the average is taken from 10-1=9 requests).

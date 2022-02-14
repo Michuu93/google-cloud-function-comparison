@@ -19,8 +19,8 @@ object ConfigReader {
     readConfig()
   }
 
-  def readConfig(args: Array[String] = Array(System.getProperty("project"), System.getProperty("token"))): TestConfig = {
-    require(args.length >= 2, "Invalid arguments, required GCP project and access token")
+  def readConfig(args: Array[String] = Array(System.getProperty("project"))): TestConfig = {
+    require(args.length >= 1, "Invalid arguments, required GCP project")
     val defaultVarFile = readFile(defaultVarFilePath)
     val defaultVarParsed = new HCLParser().parse(defaultVarFile)
     val customVarFile = readFile(customVarFilePath)
@@ -30,7 +30,7 @@ object ConfigReader {
     val functions = getFunctions(defaultVarParsed, customVarParsed).filter(function => !function.folder.endsWith("heavy")) // TODO tests modes (simple/heavy)
 
     val project = args.head
-    val token = args(1)
+    val token = IdentityTokenGetter.getIdentityToken
 
     val config = TestConfig(project, token, regions.asScala.toList, functions)
     println(config)
@@ -58,6 +58,15 @@ object ConfigReader {
     }
   }
 
+  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
+    val variables = parsed.get("variable")
+    if (variables == null) {
+      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    } else {
+      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
+    }
+  }
+
   private def getFunctions(defaultVarParsed: util.Map[String, AnyRef], customVarParsed: util.Map[String, AnyRef]): List[Function] = {
     Option(parseFunctions(customVarParsed)).getOrElse(parseFunctions(defaultVarParsed)).asScala.toList
   }
@@ -81,15 +90,6 @@ object ConfigReader {
     }
   }
 
-  private def parseVariables(parsed: util.Map[String, AnyRef]): util.LinkedHashMap[String, AnyRef] = {
-    val variables = parsed.get("variable")
-    if (variables == null) {
-      parsed.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    } else {
-      variables.asInstanceOf[util.LinkedHashMap[String, AnyRef]]
-    }
-  }
-
   private def getProjectPath: String = {
     val rootPath = os.pwd.toString()
     if (rootPath.endsWith("/tests")) {
@@ -101,8 +101,17 @@ object ConfigReader {
 
 }
 
-case class TestConfig(project: String, token: String, regions: List[String], functions: List[Function]) {
+case class TestConfig(project: String, private var token: String, regions: List[String], functions: List[Function]) {
   override def toString: String = "project=" + project + "\ntoken=" + token + "\nregions=" + regions + "\nfunctions=" + functions
+
+  def getToken: String = {
+    token
+  }
+
+  def getNewToken: String = {
+    token = IdentityTokenGetter.getIdentityToken
+    token
+  }
 }
 
 case class Function(runtime: String, folder: String) {
