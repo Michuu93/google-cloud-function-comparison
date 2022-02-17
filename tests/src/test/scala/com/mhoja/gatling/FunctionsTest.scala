@@ -5,6 +5,7 @@ import io.gatling.core.Predef._
 import io.gatling.core.structure.{PopulationBuilder, ScenarioBuilder}
 import io.gatling.http.Predef._
 
+import scala.util.Random
 import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
@@ -13,7 +14,8 @@ case class ScenarioData(function: Function, region: String) {}
 class FunctionsTest extends Simulation {
   val concurrentUsers: Int = System.getProperty("users", "20").toInt
   val testDuration: Int = System.getProperty("duration", "120").toInt
-  println(s"concurrentUsers = ${concurrentUsers}, testDuration= ${testDuration}")
+  val variant: String = System.getProperty("variant", "light")
+  println(s"concurrentUsers = ${concurrentUsers}, testDuration = ${testDuration}, variant = ${variant}")
   val config: TestConfig = ConfigReader.readConfig()
 
   var scenarios: List[PopulationBuilder] = prepareScenarios()
@@ -27,7 +29,34 @@ class FunctionsTest extends Simulation {
       val functionName = data.function.getFunctionName(data.region)
       println(s"functionName=$functionName, baseUrl=$baseUrl")
 
-      val scn: ScenarioBuilder = scenario(functionName)
+      val randomString: Iterator[Map[String, String]] = Iterator.continually(Map("randstring" -> Random.alphanumeric.take(1024).mkString))
+
+      val scn: ScenarioBuilder = if (variant.equals("heavy")) scenario(functionName)
+        .feed(randomString)
+        .exec(session => {
+          session.set("identityToken", config.getToken)
+        })
+        .group(data.region) {
+          exec(
+            http(functionName)
+              .post("/" + functionName)
+              .header("content-type", "content-type:text/plain")
+              .body(StringBody("${randstring}"))
+              .header("Authorization", "bearer ${identityToken}")
+              .check(
+                status.in(200, 401).saveAs("httpStatus"),
+                checkIf(session => session("httpStatus").as[Integer].equals(200)) {
+                  bodyString.transform(_.length > 1).is(true)
+                }
+              )
+          ).doIf(session => session("httpStatus").as[Integer].equals(401)) {
+            exec(session => {
+              val newToken = config.getNewToken
+              println(s"Refreshed token=${newToken}")
+              session.remove("httpStatus").set("identityToken", newToken)
+            })
+          }
+        } else scenario(functionName)
         .exec(session => {
           session.set("identityToken", config.getToken)
         })
