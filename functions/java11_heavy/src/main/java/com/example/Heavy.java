@@ -11,8 +11,11 @@ public class Heavy implements HttpFunction {
     @Override
     public void service(HttpRequest request, HttpResponse response) throws Exception {
         String message = request.getReader().readLine();
-        char[] sortedMessage = message.toCharArray();
-        Arrays.sort(sortedMessage);
+        char[] sortedMessage = new char[0];
+        if(message != null) {
+            sortedMessage = message.toCharArray();
+            Arrays.sort(sortedMessage);
+        }
         BufferedWriter writer = response.getWriter();
         writer.write(new String(sortedMessage));
     }
