@@ -47,6 +47,21 @@ variable "functions" {
       folder      = "php74"
       runtime     = "php74"
       entry_point = "hello_world"
+    },
+    {
+      folder     = "java11_heavy"
+      runtime     = "java11"
+      entry_point = "com.example.Heavy"
+    },
+    {
+      folder     = "nodejs_heavy"
+      runtime     = "nodejs14"
+      entry_point = "heavy"
+    },
+    {
+      folder     = "python_heavy"
+      runtime     = "python39"
+      entry_point = "heavy"
     }
   ]
 }

@@ -19,17 +19,25 @@ object ConfigReader {
     readConfig()
   }
 
-  def readConfig(args: Array[String] = Array(System.getProperty("project"))): TestConfig = {
+  def readConfig(args: Array[String] = Array(System.getProperty("project"), System.getProperty("variant"))): TestConfig = {
+    println("args = " + args.mkString(" "))
     require(args.length >= 1, "Invalid arguments, required GCP project")
+    val project = args(0)
+    val variant = if (args.length > 1 && args(1) != null) args(1) else "light"
     val defaultVarFile = readFile(defaultVarFilePath)
     val defaultVarParsed = new HCLParser().parse(defaultVarFile)
     val customVarFile = readFile(customVarFilePath)
     val customVarParsed = new HCLParser().parse(customVarFile)
 
     val regions = getRegions(defaultVarParsed, customVarParsed)
-    val functions = getFunctions(defaultVarParsed, customVarParsed).filter(function => !function.folder.endsWith("heavy")) // TODO tests modes (simple/heavy)
+    val functions =
+      if (variant.equals("light")) {
+        getFunctions(defaultVarParsed, customVarParsed).filter(function => !function.folder.contains("_"))
+      } else {
+        getFunctions(defaultVarParsed, customVarParsed).filter(function => function.folder.contains(variant))
+      }
 
-    val project = args.head
+
     val token = IdentityTokenGetter.getIdentityToken
 
     val config = TestConfig(project, token, regions.asScala.toList, functions)

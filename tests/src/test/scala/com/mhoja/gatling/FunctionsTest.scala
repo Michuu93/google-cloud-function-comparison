@@ -13,6 +13,7 @@ case class ScenarioData(function: Function, region: String) {}
 class FunctionsTest extends Simulation {
   val concurrentUsers: Int = System.getProperty("users", "20").toInt
   val testDuration: Int = System.getProperty("duration", "120").toInt
+  println(s"concurrentUsers = ${concurrentUsers}, testDuration= ${testDuration}")
   val config: TestConfig = ConfigReader.readConfig()
 
   var scenarios: List[PopulationBuilder] = prepareScenarios()

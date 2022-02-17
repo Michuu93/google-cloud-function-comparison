@@ -10,6 +10,7 @@ object AvailabilityTest {
   val client: HttpClient = HttpClient.newHttpClient
 
   def main(args: Array[String]): Unit = {
+    println("args = " + args.mkString(" "))
     val config: TestConfig = ConfigReader.readConfig(args)
 
     config.regions.foreach(region => {
