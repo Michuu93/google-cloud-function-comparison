@@ -5,8 +5,8 @@ import (
 	"os"
 
 	// Blank-import the function package so the init() runs
+	_ "example.com/go_heavy"
 	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	_ "go_heavy"
 )
 
 func main() {

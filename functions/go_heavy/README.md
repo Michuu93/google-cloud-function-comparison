@@ -13,7 +13,7 @@ go mod tidy
 
 ## Run and test function
 ```
-export FUNCTION_TARGET=HelloWorld
+export FUNCTION_TARGET=goHeavy
 go run cmd/main.go
 curl localhost:8080 -d "Hello world" -H "content-type:text/plain"
 ```

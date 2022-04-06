@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	functions.HTTP("HelloWorld", goHeavy)
+	functions.HTTP("goHeavy", goHeavy)
 }
 
 func goHeavy(w http.ResponseWriter, r *http.Request) {
