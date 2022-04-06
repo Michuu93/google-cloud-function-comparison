@@ -12,7 +12,7 @@ public class Heavy implements HttpFunction {
     public void service(HttpRequest request, HttpResponse response) throws Exception {
         String message = request.getReader().readLine();
         char[] sortedMessage = new char[0];
-        if(message != null) {
+        if (message != null) {
             sortedMessage = message.toCharArray();
             Arrays.sort(sortedMessage);
         }

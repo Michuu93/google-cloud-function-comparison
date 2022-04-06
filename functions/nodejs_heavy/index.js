@@ -4,5 +4,5 @@ exports.heavy = (req, res) => {
         let message = req.body.split('');
         sortedMessage = message.sort();
     }
-    res.status(200).send(sortedMessage.join(''));
+    res.contentType('text/plain').status(200).send(sortedMessage.join(''));
 };
