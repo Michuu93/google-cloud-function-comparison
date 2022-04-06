@@ -44,7 +44,8 @@ class FunctionsTest extends Simulation {
               .body(StringBody("${randstring}"))
               .header("Authorization", "bearer ${identityToken}")
               .check(
-                status.in(200, 401).saveAs("httpStatus"),
+                status.saveAs("httpStatus"),
+                status.is(200),
                 checkIf(session => session("httpStatus").as[Integer].equals(200)) {
                   bodyString.transform(_.length > 1).is(true)
                 }
@@ -66,7 +67,8 @@ class FunctionsTest extends Simulation {
               .get("/" + functionName)
               .header("Authorization", "bearer ${identityToken}")
               .check(
-                status.in(200, 401).saveAs("httpStatus"),
+                status.saveAs("httpStatus"),
+                status.is(200),
                 checkIf(session => session("httpStatus").as[Integer].equals(200)) {
                   bodyString.is("Hello World!")
                 }

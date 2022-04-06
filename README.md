@@ -15,12 +15,12 @@ gcloud auth application-default login
 
 ### Set default project
 ```
-gcloud config set project PROJECT_ID
+gcloud config set project [YOUR_PROJECT_ID]
 ```
 
 ### Create variables file
 ```
-echo "gcp_project = \""$(gcloud config get-value project)"\"" >> terraform/terraform.tfvars
+echo "gcp_project = \""$(gcloud config get-value project)"\"" > terraform/terraform.tfvars
 ```
 
 ### Go to terraform/
