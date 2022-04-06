@@ -63,3 +63,6 @@ __pycache__
 # dotnet
 bin
 obj
+
+# php
+vendor
